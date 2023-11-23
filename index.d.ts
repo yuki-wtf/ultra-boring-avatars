@@ -1,9 +1,9 @@
-declare module "boring-avatars" {
+declare module 'yuki-ultra-boring-avatars' {
   export interface AvatarProps {
     size?: number | string;
     name?: string;
     square?: boolean;
-    variant?: "marble" | "beam" | "pixel" | "sunset" | "ring" | "bauhaus";
+    variant?: 'marble' | 'beam' | 'pixel' | 'sunset' | 'ring' | 'bauhaus';
     colors?: string[];
   }
 
@@ -11,7 +11,7 @@ declare module "boring-avatars" {
     (props: AvatarProps, context?: any): React.ReactElement | null;
   }
 
-  const Avatar: AvatarComponent
+  const Avatar: AvatarComponent;
 
   export default Avatar;
 }

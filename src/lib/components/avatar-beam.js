@@ -2,6 +2,7 @@ import * as React from 'react';
 import { hashCode, getUnit, getBoolean, getRandomColor, getContrast } from '../utilities';
 
 const SIZE = 36;
+const PIXEL_SIZE = 1;
 
 function generateData(name, colors) {
   const numFromName = hashCode(name);
@@ -33,6 +34,31 @@ function generateData(name, colors) {
 
   return data;
 }
+function generatePixelatedEye(x, y, color) {
+  let eyeSvg = '';
+  for (let row = 0; row < 2; row++) {
+    for (let col = 0; col < 3; col++) {
+      eyeSvg += `<rect x="${x + col * PIXEL_SIZE}" y="${
+        y + row * PIXEL_SIZE
+      }" width="${PIXEL_SIZE}" height="${PIXEL_SIZE}" fill="${color}" />`;
+    }
+  }
+  return eyeSvg;
+}
+function generatePixelatedMouth(x, y, spread, color, isMouthOpen) {
+  let mouthSvg = '';
+  const mouthWidth = isMouthOpen ? 6 : 10;
+  const mouthHeight = isMouthOpen ? 1 : 3;
+
+  for (let row = 0; row < mouthHeight; row++) {
+    for (let col = 0; col < mouthWidth; col++) {
+      mouthSvg += `<rect x="${x + col * PIXEL_SIZE}" y="${
+        y + row * PIXEL_SIZE + spread
+      }" width="${PIXEL_SIZE}" height="${PIXEL_SIZE}" fill="${color}" />`;
+    }
+  }
+  return mouthSvg;
+}
 
 const AvatarBeam = (props) => {
   const data = generateData(props.name, props.colors);
@@ -59,70 +85,26 @@ const AvatarBeam = (props) => {
           width={SIZE}
           height={SIZE}
           transform={
-            'translate(' +
-            data.wrapperTranslateX +
-            ' ' +
-            data.wrapperTranslateY +
-            ') rotate(' +
-            data.wrapperRotate +
-            ' ' +
-            SIZE / 2 +
-            ' ' +
-            SIZE / 2 +
-            ') scale(' +
-            data.wrapperScale +
-            ')'
+            `translate(${data.wrapperTranslateX} ${data.wrapperTranslateY}) ` +
+            `rotate(${data.wrapperRotate} ${SIZE / 2} ${SIZE / 2}) ` +
+            `scale(${data.wrapperScale})`
           }
           fill={data.wrapperColor}
           rx={data.isCircle ? SIZE : SIZE / 6}
         />
         <g
           transform={
-            'translate(' +
-            data.faceTranslateX +
-            ' ' +
-            data.faceTranslateY +
-            ') rotate(' +
-            data.faceRotate +
-            ' ' +
-            SIZE / 2 +
-            ' ' +
-            SIZE / 2 +
-            ')'
+            `translate(${data.faceTranslateX} ${data.faceTranslateY}) ` +
+            `rotate(${data.faceRotate} ${SIZE / 2} ${SIZE / 2})`
           }
-        >
-          {data.isMouthOpen ? (
-            <path
-              d={'M15 ' + (19 + data.mouthSpread) + 'c2 1 4 1 6 0'}
-              stroke={data.faceColor}
-              fill="none"
-              strokeLinecap="round"
-            />
-          ) : (
-            <path
-              d={'M13,' + (19 + data.mouthSpread) + ' a1,0.75 0 0,0 10,0'}
-              fill={data.faceColor}
-            />
-          )}
-          <rect
-            x={14 - data.eyeSpread}
-            y={14}
-            width={1.5}
-            height={2}
-            rx={1}
-            stroke="none"
-            fill={data.faceColor}
-          />
-          <rect
-            x={20 + data.eyeSpread}
-            y={14}
-            width={1.5}
-            height={2}
-            rx={1}
-            stroke="none"
-            fill={data.faceColor}
-          />
-        </g>
+          dangerouslySetInnerHTML={{
+            __html: `
+              ${generatePixelatedEye(14 - data.eyeSpread, 14, data.faceColor)}
+              ${generatePixelatedEye(20 + data.eyeSpread, 14, data.faceColor)}
+              ${generatePixelatedMouth(13, 19, data.mouthSpread, data.faceColor, data.isMouthOpen)}
+            `,
+          }}
+        />
       </g>
     </svg>
   );
